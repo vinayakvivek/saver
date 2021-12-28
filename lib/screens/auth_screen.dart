@@ -21,6 +21,7 @@ class AuthScreen extends HookConsumerWidget {
             }
           },
           child: const Text("Authenticate"),
+          color: Colors.grey,
         ),
       ),
     );

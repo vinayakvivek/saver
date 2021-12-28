@@ -11,39 +11,32 @@ final authProvider = FutureProvider<bool>((ref) async {
   return await auth.authenticate(localizedReason: "any auth");
 });
 
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({Key? key, required this.isError}) : super(key: key);
+  final bool isError;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: isError
+          ? const Center(child: Text("Error while authenticating"))
+          : const CircularProgressIndicator(),
+    );
+  }
+}
+
 class SplashScreen extends HookConsumerWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authProvider);
-    // ref.listen(authProvider, (previous, next) {
-    //   if (next != null) {
-    //     next = next as AsyncData;
-    //     if (next.value) {
-    //       Navigator.push(context,
-    //           MaterialPageRoute(builder: (context) => const HomeScreen()));
-    //     }
-    //   }
-    // });
-    // ref.listen(authProvider.future, (previous, next) {
-    //   print(previous);
-    //   print(next);
-    // });
-    // auth.whenData((value) {
-    //   if (value) {
-    //     Future.delayed(Duration.zero, () {
-    //       Navigator.push(context,
-    //           MaterialPageRoute(builder: (context) => const HomeScreen()));
-    //     });
-    //   }
-    // });
     return auth.when(
       data: (value) {
         return value ? const HomeScreen() : const AuthScreen();
       },
-      error: (err, stack) => const Text("Err"),
-      loading: () => const CircularProgressIndicator(),
+      error: (err, stack) => const LoadingScreen(isError: true),
+      loading: () => const LoadingScreen(isError: false),
     );
   }
 }
