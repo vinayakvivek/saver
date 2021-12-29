@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:saver/account.dart';
 import 'package:saver/boxes.dart';
 
-class AddAccountForm extends HookWidget {
-  const AddAccountForm({Key? key, this.account}) : super(key: key);
-  final Account? account;
+class AccountForm extends HookConsumerWidget {
+  const AccountForm({
+    Key? key,
+    required this.account,
+    required this.isUpdate,
+  }) : super(key: key);
+  final Account account;
+  final bool isUpdate;
 
   @override
-  Widget build(BuildContext context) {
-    final name = useState(account?.name ?? '');
-    final username = useState(account?.username ?? '');
-    final password = useState(account?.password ?? '');
+  Widget build(BuildContext context, WidgetRef ref) {
+    final name = useState(account.name);
+    final username = useState(account.username);
+    final password = useState(account.password);
     final nameController = useTextEditingController(text: name.value);
     final usernameController = useTextEditingController(text: username.value);
     final passwordController = useTextEditingController(text: password.value);
@@ -63,25 +69,20 @@ class AddAccountForm extends HookWidget {
               ),
             ),
             onPressed: () {
-              if (account != null) {
-                account?.name = name.value;
-                account?.username = username.value;
-                account?.password = password.value;
-                account?.save();
+              account.name = name.value;
+              account.username = username.value;
+              account.password = password.value;
+              if (isUpdate) {
+                account.save();
               } else {
-                final newAccount = Account(
-                  name: name.value,
-                  username: username.value,
-                  password: password.value,
-                );
+                // create new
                 final box = Boxes.getAccounts();
-                box.add(newAccount);
+                box.add(account);
               }
-
               Navigator.pop(context);
             },
             child: Text(
-              account == null ? 'Create' : 'Update',
+              isUpdate ? 'Update' : 'Create',
               style: const TextStyle(color: Colors.black),
             ),
           ),
@@ -91,9 +92,11 @@ class AddAccountForm extends HookWidget {
   }
 }
 
-class AddAccountScreen extends StatelessWidget {
-  const AddAccountScreen({Key? key, this.account}) : super(key: key);
-  final Account? account;
+class AccountScreen extends StatelessWidget {
+  const AccountScreen({Key? key, required this.account, this.isUpdate = false})
+      : super(key: key);
+  final Account account;
+  final bool isUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +104,7 @@ class AddAccountScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: AddAccountForm(account: account),
+          child: AccountForm(account: account, isUpdate: isUpdate),
         ),
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:saver/providers.dart';
 import 'package:saver/screens/home_screen.dart';
-import 'package:saver/screens/splash_screen.dart';
 
 class AuthScreen extends HookConsumerWidget {
   const AuthScreen({Key? key}) : super(key: key);

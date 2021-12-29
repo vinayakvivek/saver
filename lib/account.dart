@@ -10,6 +10,10 @@ class Account extends HiveObject {
     required this.password,
   });
 
+  factory Account.empty() {
+    return Account(name: "", username: "", password: "");
+  }
+
   @HiveField(0)
   String name;
 

@@ -1,19 +1,28 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:saver/account.dart';
 import 'package:saver/boxes.dart';
-import 'package:saver/screens/add_account_screen.dart';
-import 'package:saver/screens/splash_screen.dart';
+import 'package:saver/providers.dart';
+import 'package:saver/screens/account_screen.dart';
 
 class AccountTile extends HookConsumerWidget {
   const AccountTile({Key? key, required this.account}) : super(key: key);
   final Account account;
 
+  final showPasswordDuration = const Duration(seconds: 10);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final localAuth = ref.read(localAuthProvider);
+    // final localAuth = ref.read(localAuthProvider);
+    final performAuth = useCallback(() async {
+      return await ref
+          .read(localAuthProvider)
+          .authenticate(localizedReason: "perform auth");
+    }, []);
     final showPassword = useState(false);
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -32,19 +41,24 @@ class AccountTile extends HookConsumerWidget {
             showPassword.value = false;
             return;
           }
-          final auth =
-              await localAuth.authenticate(localizedReason: "specific auth");
-          if (auth) {
+          if (await performAuth()) {
             showPassword.value = true;
+            Timer(showPasswordDuration, () {
+              showPassword.value = false;
+            });
           }
         },
         tileColor: Colors.grey[200],
         trailing: IconButton(
-            onPressed: () {
+            onPressed: () async {
+              if (!(await performAuth())) return;
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddAccountScreen(account: account),
+                  builder: (context) => AccountScreen(
+                    account: account,
+                    isUpdate: true,
+                  ),
                 ),
               );
             },
@@ -54,11 +68,11 @@ class AccountTile extends HookConsumerWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends HookConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: ValueListenableBuilder<Box<Account>>(
         valueListenable: Boxes.getAccounts().listenable(),
@@ -77,7 +91,9 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AddAccountScreen()),
+            MaterialPageRoute(
+              builder: (context) => AccountScreen(account: Account.empty()),
+            ),
           );
         },
         child: const Icon(Icons.add),
