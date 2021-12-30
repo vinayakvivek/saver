@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,6 +9,7 @@ import 'package:saver/boxes.dart';
 import 'package:saver/screens/account_screen.dart';
 import 'package:saver/screens/components/account_tile.dart';
 import 'package:saver/screens/components/export_dialog.dart';
+import 'package:saver/screens/components/import_dialog.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -24,7 +28,18 @@ class HomeScreen extends HookConsumerWidget {
             icon: const Icon(Icons.ios_share),
           ),
           IconButton(
-            onPressed: () async {},
+            onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles();
+              if (result != null) {
+                File file = File(result.files.single.path!);
+                showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        ImportDialog(file: file));
+              } else {
+                // User canceled the picker
+              }
+            },
             icon: const Icon(Icons.download),
           ),
         ],

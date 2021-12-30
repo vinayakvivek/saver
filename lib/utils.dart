@@ -36,13 +36,7 @@ Future<File> exportAccountsToFile({required String passphrase}) async {
             })
         .toList()
   };
-
   final content = jsonEncode(accountsMap);
-
-  // String encryptedBase64 = "QwA7VPZaazVZZ3hfnfQrKw==";
-  // final decrypted =
-  //     encrypter.decrypt(Encrypted.fromBase64(encryptedBase64), iv: iv);
-  // print({decrypted});
 
   final directory = await getApplicationDocumentsDirectory();
   final fileName = "data_export_${dateString()}.json";
@@ -51,4 +45,28 @@ Future<File> exportAccountsToFile({required String passphrase}) async {
   return outFile;
 }
 
-void importAccountsFromFile() {}
+void importAccountsFromFile({
+  required File file,
+  required String passphrase,
+}) {
+  passphrase = paddedPassphrase(passphrase);
+  final key = Key.fromUtf8(passphrase);
+  final iv = IV.fromLength(16);
+  final encrypter = Encrypter(AES(key));
+
+  final content = jsonDecode(file.readAsStringSync());
+  final accounts = (content['accounts'] as List).map(
+    (obj) => Account(
+      name: obj['name'],
+      username: obj['username'],
+      password: encrypter.decrypt64(obj['password'], iv: iv),
+    ),
+  );
+
+  final box = Boxes.getAccounts();
+  final currentKeys = List.from(box.keys);
+  for (var account in accounts) {
+    box.add(account);
+  }
+  box.deleteAll(currentKeys);
+}

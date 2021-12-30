@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:saver/utils.dart';
 
-class ExportDialog extends HookWidget {
-  const ExportDialog({Key? key}) : super(key: key);
+class ImportDialog extends HookWidget {
+  const ImportDialog({Key? key, required this.file}) : super(key: key);
+  final File file;
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +19,27 @@ class ExportDialog extends HookWidget {
         ),
       );
     }, []);
+    final fileName = file.path.split('/').last;
     return AlertDialog(
-      title: const Text('Export your data'),
+      title: const Text('Import data'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Type in a passphrase to encrypt your passwords/secrets'),
+          const Text("Data file:"),
+          Text(
+            fileName,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           TextField(
             decoration: const InputDecoration(hintText: 'passphrase'),
             onChanged: (value) => passphrase.value = value,
-          )
+          ),
+          const SizedBox(height: 20.0),
+          const Text(
+            "** This action will remove all existing accounts",
+            style: TextStyle(fontSize: 12.0),
+          ),
         ],
       ),
       actions: <Widget>[
@@ -43,18 +57,17 @@ class ExportDialog extends HookWidget {
             } else {
               // TODO: use either to manage error flow
               try {
-                final outFile =
-                    await exportAccountsToFile(passphrase: passphrase.value);
-                print('Exported data to: ${outFile.path}');
-                showSnackbar('Exported successfully');
-                Navigator.pop(context, 'Export');
+                importAccountsFromFile(
+                    file: file, passphrase: passphrase.value);
+                Navigator.pop(context, 'Import');
+                showSnackbar('Successfully imported data');
               } catch (err) {
                 print(err);
-                showSnackbar('Error while exporting');
+                showSnackbar('Error while importing');
               }
             }
           },
-          child: const Text('Export'),
+          child: const Text('Import'),
         ),
       ],
     );
