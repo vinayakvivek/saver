@@ -45,5 +45,7 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>For security and shit</string>
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
 </dict>
 </plist>
