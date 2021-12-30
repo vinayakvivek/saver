@@ -8,21 +8,30 @@ import 'package:saver/models/account.dart';
 import 'package:saver/providers.dart';
 import 'package:saver/screens/account_screen.dart';
 
+final authStateProvider = StateProvider<bool>((_) => false);
+
 class AccountTile extends HookConsumerWidget {
   const AccountTile({Key? key, required this.account}) : super(key: key);
   final Account account;
 
   final showPasswordDuration = const Duration(seconds: 10);
+  final authenticatedDuration = const Duration(seconds: 30);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final localAuth = ref.read(localAuthProvider);
     final performAuth = useCallback(() async {
-      // ! for testing
-      return true;
-      return await ref
+      final auth = ref.read(authStateProvider.notifier);
+      if (auth.state) {
+        return true;
+      }
+      final result = await ref
           .read(localAuthProvider)
           .authenticate(localizedReason: "perform auth");
+      auth.state = true;
+      Timer(authenticatedDuration, () {
+        auth.state = false;
+      });
+      return result;
     }, []);
     final showPassword = useState(false);
     return Padding(
