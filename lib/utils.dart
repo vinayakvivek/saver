@@ -50,3 +50,5 @@ Future<File> exportAccountsToFile({required String passphrase}) async {
   final outFile = await file.writeAsString(content);
   return outFile;
 }
+
+void importAccountsFromFile() {}
