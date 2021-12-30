@@ -19,16 +19,14 @@ String dateString() {
   return "${date.day}_${date.month}_${date.year}_${date.hour}_${date.minute}_${date.second}";
 }
 
-void exportAccountsToFile({required String passphrase}) async {
-  final box = Boxes.getAccounts();
-  final accounts = box.values.toList().cast<Account>();
-  print(accounts);
-
+Future<File> exportAccountsToFile({required String passphrase}) async {
   passphrase = paddedPassphrase(passphrase);
   final key = Key.fromUtf8(passphrase);
   final iv = IV.fromLength(16);
   final encrypter = Encrypter(AES(key));
 
+  final box = Boxes.getAccounts();
+  final accounts = box.values.toList().cast<Account>();
   Map<String, dynamic> accountsMap = {
     'accounts': accounts
         .map((account) => {
@@ -50,5 +48,5 @@ void exportAccountsToFile({required String passphrase}) async {
   final fileName = "data_export_${dateString()}.json";
   final file = File("${directory.path}/$fileName");
   final outFile = await file.writeAsString(content);
-  print(outFile.path);
+  return outFile;
 }

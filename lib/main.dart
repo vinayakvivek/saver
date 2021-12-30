@@ -27,8 +27,10 @@ void main() async {
     print('boxKey: ' + key.toString());
   }
 
-  await Hive.openBox<Account>(kAccountBox,
-      encryptionCipher: HiveAesCipher(key));
+  await Hive.openBox<Account>(
+    kAccountBox,
+    encryptionCipher: HiveAesCipher(key),
+  );
   runApp(
     const ProviderScope(
       child: MyApp(),
