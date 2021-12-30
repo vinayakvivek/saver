@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:saver/account.dart';
+import 'package:saver/models/account.dart';
 import 'package:saver/boxes.dart';
 
 class AccountForm extends HookConsumerWidget {
@@ -81,10 +81,7 @@ class AccountForm extends HookConsumerWidget {
               }
               Navigator.pop(context);
             },
-            child: Text(
-              isUpdate ? 'Update' : 'Create',
-              style: const TextStyle(color: Colors.black),
-            ),
+            child: Text(isUpdate ? 'Update' : 'Create'),
           ),
         )
       ],

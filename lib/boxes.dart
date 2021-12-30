@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:saver/account.dart';
+import 'package:saver/models/account.dart';
 
 const kAccountBox = 'accounts';
 

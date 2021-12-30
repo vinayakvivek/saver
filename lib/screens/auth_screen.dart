@@ -16,7 +16,7 @@ class AuthScreen extends HookConsumerWidget {
             final auth =
                 await localAuth.authenticate(localizedReason: "re-auth");
             if (auth) {
-              Navigator.push(context,
+              Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()));
             }
           },
