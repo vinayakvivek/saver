@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:saver/context_utils.dart';
 import 'package:saver/utils.dart';
 
 class ExportDialog extends HookWidget {
@@ -8,14 +9,6 @@ class ExportDialog extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final passphrase = useState("");
-    final showSnackbar = useCallback((String text, {int seconds = 1}) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(text),
-          duration: Duration(seconds: seconds),
-        ),
-      );
-    }, []);
     return AlertDialog(
       title: const Text('Export your data'),
       content: Column(
@@ -39,18 +32,18 @@ class ExportDialog extends HookWidget {
           ),
           onPressed: () async {
             if (passphrase.value.isEmpty) {
-              showSnackbar('Please enter a passphrase');
+              showSnackbar(context, 'Please enter a passphrase');
             } else {
               // TODO: use either to manage error flow
               try {
                 final outFile =
                     await exportAccountsToFile(passphrase: passphrase.value);
                 print('Exported data to: ${outFile.path}');
-                showSnackbar('Exported successfully');
+                showSnackbar(context, 'Exported successfully');
                 Navigator.pop(context, 'Export');
               } catch (err) {
                 print(err);
-                showSnackbar('Error while exporting');
+                showSnackbar(context, 'Error while exporting');
               }
             }
           },

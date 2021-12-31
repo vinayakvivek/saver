@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:saver/context_utils.dart';
 import 'package:saver/utils.dart';
 
 class ImportDialog extends HookWidget {
@@ -11,14 +12,6 @@ class ImportDialog extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final passphrase = useState("");
-    final showSnackbar = useCallback((String text, {int seconds = 1}) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(text),
-          duration: Duration(seconds: seconds),
-        ),
-      );
-    }, []);
     final fileName = file.path.split('/').last;
     return AlertDialog(
       title: const Text('Import data'),
@@ -53,17 +46,17 @@ class ImportDialog extends HookWidget {
           ),
           onPressed: () async {
             if (passphrase.value.isEmpty) {
-              showSnackbar('Please enter a passphrase');
+              showSnackbar(context, 'Please enter a passphrase');
             } else {
               // TODO: use either to manage error flow
               try {
                 importAccountsFromFile(
                     file: file, passphrase: passphrase.value);
                 Navigator.pop(context, 'Import');
-                showSnackbar('Successfully imported data');
+                showSnackbar(context, 'Successfully imported data');
               } catch (err) {
                 print(err);
-                showSnackbar('Error while importing');
+                showSnackbar(context, 'Error while importing');
               }
             }
           },

@@ -8,6 +8,7 @@ import 'package:saver/models/account.dart';
 import 'package:saver/boxes.dart';
 import 'package:saver/screens/account_screen.dart';
 import 'package:saver/screens/components/account_tile.dart';
+import 'package:saver/screens/components/auth_pointer.dart';
 import 'package:saver/screens/components/export_dialog.dart';
 import 'package:saver/screens/components/import_dialog.dart';
 
@@ -18,7 +19,14 @@ class HomeScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Accounts"),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text("Accounts"),
+            SizedBox(width: 10.0),
+            AuthPointer(),
+          ],
+        ),
         actions: [
           IconButton(
             onPressed: () => showDialog<String>(
