@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:saver/constants.dart';
 import 'package:saver/providers.dart';
 
 void showSnackbar(BuildContext context, String text, {int seconds = 1}) {
@@ -13,7 +14,6 @@ void showSnackbar(BuildContext context, String text, {int seconds = 1}) {
   );
 }
 
-const authenticatedDuration = Duration(seconds: 5);
 Future<bool> performAuth(WidgetRef ref) async {
   print('in performAuth');
   final auth = ref.read(authStateProvider.notifier);
@@ -25,7 +25,7 @@ Future<bool> performAuth(WidgetRef ref) async {
       .authenticate(localizedReason: "perform auth");
   if (result) {
     auth.state = true;
-    Timer(authenticatedDuration, () {
+    Timer(kAuthenticatedDuration, () {
       print('resetting state');
       ref.read(authStateProvider.notifier).state = false;
     });

@@ -3,16 +3,9 @@ import 'dart:io';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:saver/aes_encrypter.dart';
 import 'package:saver/models/account.dart';
 import 'package:saver/boxes.dart';
-
-String paddedPassphrase(String passphrase) {
-  final n = passphrase.length;
-  if (n == 32) return passphrase;
-  if (n > 32) return passphrase.substring(0, 32);
-  passphrase += "0" * (32 - n);
-  return passphrase;
-}
 
 String dateString() {
   final date = DateTime.now();
@@ -20,21 +13,13 @@ String dateString() {
 }
 
 Future<File> exportAccountsToFile({required String passphrase}) async {
-  passphrase = paddedPassphrase(passphrase);
-  final key = Key.fromUtf8(passphrase);
-  final iv = IV.fromLength(16);
-  final encrypter = Encrypter(AES(key));
+  final encrypter = AESEncrypter(passphrase);
 
   final box = Boxes.getAccounts();
   final accounts = box.values.toList().cast<Account>();
   Map<String, dynamic> accountsMap = {
-    'accounts': accounts
-        .map((account) => {
-              'name': account.name,
-              'username': account.username,
-              'password': encrypter.encrypt(account.password, iv: iv).base64,
-            })
-        .toList()
+    'accounts':
+        accounts.map((account) => account.toEncryptedJson(encrypter)).toList()
   };
   final content = jsonEncode(accountsMap);
 
@@ -49,18 +34,11 @@ void importAccountsFromFile({
   required File file,
   required String passphrase,
 }) {
-  passphrase = paddedPassphrase(passphrase);
-  final key = Key.fromUtf8(passphrase);
-  final iv = IV.fromLength(16);
-  final encrypter = Encrypter(AES(key));
+  final encrypter = AESEncrypter(passphrase);
 
   final content = jsonDecode(file.readAsStringSync());
   final accounts = (content['accounts'] as List).map(
-    (obj) => Account(
-      name: obj['name'],
-      username: obj['username'],
-      password: encrypter.decrypt64(obj['password'], iv: iv),
-    ),
+    (obj) => Account.fromEncryptedJson(obj, encrypter),
   );
 
   final box = Boxes.getAccounts();

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:saver/aes_encrypter.dart';
 
 part 'account.g.dart';
 
@@ -27,4 +28,18 @@ class Account extends HiveObject {
   String toString() {
     return "Account{name: $name, username: $username, passwordLength: ${password.length}}";
   }
+
+  toEncryptedJson(AESEncrypter encrypter) => {
+        'name': name,
+        'username': username,
+        'password': encrypter.encrypt(password),
+      };
+
+  factory Account.fromEncryptedJson(
+          Map<String, dynamic> json, AESEncrypter encrypter) =>
+      Account(
+        name: json['name'],
+        username: json['username'],
+        password: encrypter.decrypt(json['password']),
+      );
 }
