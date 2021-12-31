@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:saver/icons/example_icon.dart';
+import 'package:saver/icons/icons.dart';
 import 'package:saver/models/account.dart';
 import 'package:saver/boxes.dart';
 import 'package:saver/screens/components/icon_selector_dialog.dart';
@@ -25,7 +26,7 @@ class AccountForm extends HookConsumerWidget {
     final usernameController = useTextEditingController(text: username.value);
     final passwordController = useTextEditingController(text: password.value);
     final showPassword = useState(false);
-    final icon = useState(FontAwesomeIcons.userLock);
+    final icon = useState(getIconByName(account.iconName ?? ''));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -40,7 +41,7 @@ class AccountForm extends HookConsumerWidget {
                   builder: (context) => const IconSelectorDialog(),
                 );
                 if (result != null) {
-                  icon.value = result.iconData;
+                  icon.value = result;
                 }
               },
               child: Container(
@@ -52,7 +53,7 @@ class AccountForm extends HookConsumerWidget {
                 ),
                 child: Center(
                   child: FaIcon(
-                    icon.value,
+                    icon.value.iconData,
                     size: 40.0,
                   ),
                 ),
@@ -108,6 +109,7 @@ class AccountForm extends HookConsumerWidget {
               account.name = name.value;
               account.username = username.value;
               account.password = password.value;
+              account.iconName = icon.value.title;
               if (isUpdate) {
                 account.save();
               } else {

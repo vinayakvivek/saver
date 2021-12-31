@@ -1,6 +1,13 @@
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:saver/icons/example_icon.dart';
 
+ExampleIcon getIconByName(String name) {
+  return icons.firstWhere(
+    (icon) => icon.title == name,
+    orElse: () => ExampleIcon(FontAwesomeIcons.userLock, 'userLock'),
+  );
+}
+
 /// source: https://github.com/fluttercommunity/font_awesome_flutter/blob/master/example/lib/icons.dart
 final icons = <ExampleIcon>[
   ExampleIcon(FontAwesomeIcons.fiveHundredPx, 'fiveHundredPx'),

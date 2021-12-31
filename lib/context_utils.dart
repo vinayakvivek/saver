@@ -20,10 +20,9 @@ Future<bool> performAuth(WidgetRef ref) async {
   if (auth.state) {
     return true;
   }
-  // final result = await ref
-  //     .read(localAuthProvider)
-  //     .authenticate(localizedReason: "perform auth");
-  final result = true;
+  final result = await ref
+      .read(localAuthProvider)
+      .authenticate(localizedReason: "perform auth");
   if (result) {
     auth.state = true;
     Timer(kAuthenticatedDuration, () {

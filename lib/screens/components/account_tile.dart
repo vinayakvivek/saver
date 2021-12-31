@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:saver/context_utils.dart';
+import 'package:saver/icons/icons.dart';
 import 'package:saver/models/account.dart';
 import 'package:saver/screens/account_screen.dart';
 
@@ -82,7 +84,14 @@ class AccountTile extends HookConsumerWidget {
                     style: const TextStyle(fontSize: 16.0)),
               ],
             ),
-            leading: const FlutterLogo(size: 56.0),
+            leading: Container(
+              alignment: Alignment.center,
+              width: 50.0,
+              child: FaIcon(
+                getIconByName(account.iconName ?? '').iconData,
+                size: 30.0,
+              ),
+            ),
             onTap: () async {
               if (showPassword.value) {
                 showPassword.value = false;
