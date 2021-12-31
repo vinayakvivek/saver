@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:saver/context_utils.dart';
 import 'package:saver/models/account.dart';
 import 'package:saver/boxes.dart';
 import 'package:saver/screens/account_screen.dart';
@@ -29,24 +30,32 @@ class HomeScreen extends HookConsumerWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () => showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => const ExportDialog(),
-            ),
+            onPressed: () {
+              doPostAuth(
+                ref,
+                () => showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => const ExportDialog(),
+                ),
+              );
+            },
             icon: const Icon(Icons.ios_share),
           ),
           IconButton(
             onPressed: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles();
-              if (result != null) {
-                File file = File(result.files.single.path!);
-                showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        ImportDialog(file: file));
-              } else {
-                // User canceled the picker
-              }
+              doPostAuth(ref, () async {
+                FilePickerResult? result =
+                    await FilePicker.platform.pickFiles();
+                if (result != null) {
+                  File file = File(result.files.single.path!);
+                  showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          ImportDialog(file: file));
+                } else {
+                  // User canceled the picker
+                }
+              });
             },
             icon: const Icon(Icons.download),
           ),

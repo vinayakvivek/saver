@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:saver/providers.dart';
-import 'package:saver/screens/auth_screen.dart';
 import 'package:saver/screens/home_screen.dart';
 
 class LoadingScreen extends StatelessWidget {
@@ -23,13 +21,6 @@ class SplashScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final auth = ref.watch(authProvider);
-    return auth.when(
-      data: (value) {
-        return value ? const HomeScreen() : const AuthScreen();
-      },
-      error: (err, stack) => const LoadingScreen(isError: true),
-      loading: () => const LoadingScreen(isError: false),
-    );
+    return const HomeScreen();
   }
 }

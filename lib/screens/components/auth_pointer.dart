@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:saver/screens/components/account_tile.dart';
+import 'package:saver/providers.dart';
 
 class AuthPointer extends HookConsumerWidget {
   const AuthPointer({Key? key}) : super(key: key);

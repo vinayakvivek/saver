@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:saver/context_utils.dart';
 import 'package:saver/models/account.dart';
-import 'package:saver/providers.dart';
 import 'package:saver/screens/account_screen.dart';
-
-final authStateProvider = StateProvider<bool>((_) => false);
 
 class AccountTile extends HookConsumerWidget {
   const AccountTile({Key? key, required this.account}) : super(key: key);
@@ -19,20 +17,6 @@ class AccountTile extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final performAuth = useCallback(() async {
-      final auth = ref.read(authStateProvider.notifier);
-      if (auth.state) {
-        return true;
-      }
-      final result = await ref
-          .read(localAuthProvider)
-          .authenticate(localizedReason: "perform auth");
-      auth.state = true;
-      Timer(authenticatedDuration, () {
-        auth.state = false;
-      });
-      return result;
-    }, []);
     final showPassword = useState(false);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
@@ -104,25 +88,26 @@ class AccountTile extends HookConsumerWidget {
                 showPassword.value = false;
                 return;
               }
-              if (await performAuth()) {
+              doPostAuth(ref, () {
                 showPassword.value = true;
                 Timer(showPasswordDuration, () {
                   showPassword.value = false;
                 });
-              }
+              });
             },
             trailing: IconButton(
                 onPressed: () async {
-                  if (!(await performAuth())) return;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AccountScreen(
-                        account: account,
-                        isUpdate: true,
+                  doPostAuth(ref, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AccountScreen(
+                          account: account,
+                          isUpdate: true,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  });
                 },
                 icon: const Icon(Icons.edit)),
           ),
