@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:saver/icons/example_icon.dart';
 import 'package:saver/models/account.dart';
 import 'package:saver/boxes.dart';
+import 'package:saver/screens/components/icon_selector_dialog.dart';
 
 class AccountForm extends HookConsumerWidget {
   const AccountForm({
@@ -22,9 +25,42 @@ class AccountForm extends HookConsumerWidget {
     final usernameController = useTextEditingController(text: username.value);
     final passwordController = useTextEditingController(text: password.value);
     final showPassword = useState(false);
+    final icon = useState(FontAwesomeIcons.userLock);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        const SizedBox(height: 100.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () async {
+                final result = await showDialog<ExampleIcon>(
+                  context: context,
+                  builder: (context) => const IconSelectorDialog(),
+                );
+                if (result != null) {
+                  icon.value = result.iconData;
+                }
+              },
+              child: Container(
+                width: 70.0,
+                height: 70.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.red,
+                ),
+                child: Center(
+                  child: FaIcon(
+                    icon.value,
+                    size: 40.0,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        const SizedBox(height: 50.0),
         TextFormField(
           controller: nameController,
           decoration: const InputDecoration(
