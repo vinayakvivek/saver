@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
           style: TextButton.styleFrom(primary: Colors.white),
         ),
       ),
+      debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
     );
   }
