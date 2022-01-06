@@ -66,7 +66,7 @@ class HomeScreen extends HookConsumerWidget {
         builder: (context, box, _) {
           final accounts = box.values.toList().cast<Account>();
           return ListView.builder(
-            padding: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 150),
             itemBuilder: (context, index) {
               final account = accounts[index];
               return AccountTile(account: account);
