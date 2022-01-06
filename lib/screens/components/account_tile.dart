@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,11 +16,12 @@ class AccountTile extends HookConsumerWidget {
   final Account account;
 
   final showPasswordDuration = const Duration(seconds: 10);
-  final authenticatedDuration = const Duration(seconds: 30);
+  final copyingDuration = const Duration(seconds: 2);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showPassword = useState(false);
+    final copying = useState(false);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Slidable(
@@ -104,21 +106,39 @@ class AccountTile extends HookConsumerWidget {
                 });
               });
             },
-            trailing: IconButton(
-                onPressed: () async {
-                  doPostAuth(ref, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AccountScreen(
-                          account: account,
-                          isUpdate: true,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () async {
+                    doPostAuth(ref, () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AccountScreen(
+                            account: account,
+                            isUpdate: true,
+                          ),
                         ),
-                      ),
-                    );
-                  });
-                },
-                icon: const Icon(Icons.edit)),
+                      );
+                    });
+                  },
+                  icon: const Icon(Icons.edit),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    doPostAuth(ref, () {
+                      Clipboard.setData(ClipboardData(text: account.password));
+                      copying.value = true;
+                      Timer(copyingDuration, () {
+                        copying.value = false;
+                      });
+                    });
+                  },
+                  icon: Icon(copying.value ? Icons.check : Icons.copy),
+                ),
+              ],
+            ),
           ),
         ),
       ),
