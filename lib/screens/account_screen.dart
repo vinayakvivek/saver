@@ -6,6 +6,7 @@ import 'package:saver/icons/example_icon.dart';
 import 'package:saver/icons/icons.dart';
 import 'package:saver/models/account.dart';
 import 'package:saver/boxes.dart';
+import 'package:saver/screens/components/copy_button.dart';
 import 'package:saver/screens/components/icon_selector_dialog.dart';
 
 class AccountForm extends HookConsumerWidget {
@@ -16,6 +17,8 @@ class AccountForm extends HookConsumerWidget {
   }) : super(key: key);
   final Account account;
   final bool isUpdate;
+
+  final copyingDuration = const Duration(seconds: 2);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,34 +64,51 @@ class AccountForm extends HookConsumerWidget {
             )
           ],
         ),
-        const SizedBox(height: 50.0),
+        const SizedBox(height: 30.0),
         TextFormField(
           controller: nameController,
           decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Account name',
+            // border: OutlineInputBorder(),
+            hintText: 'Account name',
           ),
+          textAlign: TextAlign.center,
           onChanged: (value) => name.value = value,
         ),
+        const SizedBox(height: 50.0),
         TextFormField(
           controller: usernameController,
-          decoration: const InputDecoration(
-            border: UnderlineInputBorder(),
-            labelText: 'username / email',
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            labelText: 'username',
+            hintText: 'Your username or email',
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CopyButton(getText: () => username.value),
+              ],
+            ),
           ),
           onChanged: (value) => username.value = value,
         ),
+        const SizedBox(height: 20.0),
         TextFormField(
           controller: passwordController,
           decoration: InputDecoration(
-            border: const UnderlineInputBorder(),
+            border: const OutlineInputBorder(),
             labelText: 'password',
-            suffixIcon: IconButton(
-              onPressed: () {
-                showPassword.value = !showPassword.value;
-              },
-              icon: Icon(
-                  showPassword.value ? Icons.visibility_off : Icons.visibility),
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    showPassword.value = !showPassword.value;
+                  },
+                  icon: Icon(showPassword.value
+                      ? Icons.visibility_off
+                      : Icons.visibility),
+                ),
+                CopyButton(getText: () => password.value),
+              ],
             ),
           ),
           onChanged: (value) => password.value = value,
@@ -103,6 +123,9 @@ class AccountForm extends HookConsumerWidget {
                   borderRadius: BorderRadius.circular(18.0),
                   side: const BorderSide(color: Colors.grey),
                 ),
+              ),
+              padding: MaterialStateProperty.all<EdgeInsets>(
+                const EdgeInsets.symmetric(horizontal: 20.0),
               ),
             ),
             onPressed: () {

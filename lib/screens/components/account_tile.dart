@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,18 +9,17 @@ import 'package:saver/context_utils.dart';
 import 'package:saver/icons/icons.dart';
 import 'package:saver/models/account.dart';
 import 'package:saver/screens/account_screen.dart';
+import 'package:saver/screens/components/copy_button.dart';
 
 class AccountTile extends HookConsumerWidget {
   const AccountTile({Key? key, required this.account}) : super(key: key);
   final Account account;
 
   final showPasswordDuration = const Duration(seconds: 10);
-  final copyingDuration = const Duration(seconds: 2);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showPassword = useState(false);
-    final copying = useState(false);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Slidable(
@@ -125,18 +123,7 @@ class AccountTile extends HookConsumerWidget {
                   },
                   icon: const Icon(Icons.edit),
                 ),
-                IconButton(
-                  onPressed: () async {
-                    doPostAuth(ref, () {
-                      Clipboard.setData(ClipboardData(text: account.password));
-                      copying.value = true;
-                      Timer(copyingDuration, () {
-                        copying.value = false;
-                      });
-                    });
-                  },
-                  icon: Icon(copying.value ? Icons.check : Icons.copy),
-                ),
+                CopyButton(getText: () => account.password),
               ],
             ),
           ),
