@@ -63,7 +63,11 @@ class AccountTile extends HookConsumerWidget {
           ],
         ),
         child: Container(
-          decoration: BoxDecoration(color: Colors.grey[900]),
+          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: ListTile(
             contentPadding: const EdgeInsets.all(8.0),
             title: Text(
